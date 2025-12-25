@@ -10,7 +10,9 @@ const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
  * Uses gemini-2.5-flash-image which is generally available.
  */
 export const generateImage = async (item: string): Promise<string> => {
-  if (!ai) throw new Error("API Key not found");
+  if (!ai) {
+    throw new Error("API Key not found. Please set process.env.API_KEY in your environment.");
+  }
 
   try {
     const response = await ai.models.generateContent({
@@ -67,7 +69,9 @@ export const generateImage = async (item: string): Promise<string> => {
  * Uses gemini-3-flash-preview for text generation.
  */
 export const generateDescription = async (item: string): Promise<string> => {
-  if (!ai) throw new Error("API Key not found");
+  if (!ai) {
+    throw new Error("API Key not found. Please set process.env.API_KEY in your environment.");
+  }
 
   try {
     const response = await ai.models.generateContent({
