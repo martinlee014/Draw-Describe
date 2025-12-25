@@ -5,9 +5,12 @@ let aiClient: GoogleGenAI | null = null;
 const getAiClient = (): GoogleGenAI => {
   if (aiClient) return aiClient;
 
+  // Use the standard process.env.API_KEY as mandated
   const apiKey = process.env.API_KEY;
+  
   if (!apiKey) {
-    throw new Error("API Key not found. Please ensure process.env.API_KEY is set.");
+    console.error("Critical: API Key is missing. Checked process.env.API_KEY.");
+    throw new Error("API Key is missing. Please set API_KEY in your .env file or environment variables.");
   }
 
   aiClient = new GoogleGenAI({ apiKey });
