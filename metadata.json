@@ -1,0 +1,5 @@
+{
+  "name": "Draw & Describe",
+  "description": "An interactive AI experience that draws any item you name and provides a detailed description.",
+  "requestFramePermissions": []
+}
