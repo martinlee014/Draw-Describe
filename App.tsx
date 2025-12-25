@@ -24,12 +24,12 @@ const App: React.FC = () => {
     setError(null);
     setLoadingState({ isGeneratingImage: true, isGeneratingText: true });
 
-    // We run these in parallel to make the UI feel faster, but handle errors individually
+    // We run these in parallel
     
     // 1. Trigger Image Generation
     const imagePromise = generateImage(item)
-      .then((url) => {
-        setResult((prev) => prev ? { ...prev, imageUrl: url } : null);
+      .then((res) => {
+        setResult((prev) => prev ? { ...prev, imageUrl: res.url, imageProvider: res.provider } : null);
       })
       .catch((err) => {
         console.error("Image gen failed", err);
@@ -42,8 +42,8 @@ const App: React.FC = () => {
 
     // 2. Trigger Description Generation
     const textPromise = generateDescription(item)
-      .then((desc) => {
-        setResult((prev) => prev ? { ...prev, description: desc } : null);
+      .then((res) => {
+        setResult((prev) => prev ? { ...prev, description: res.text, textProvider: res.provider } : null);
       })
       .catch((err) => {
         console.error("Text gen failed", err);
@@ -74,7 +74,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className="mt-20 text-center text-gray-600 text-sm pb-6">
-        <p>Mock Mode (AI Disabled) - No API Key Required</p>
+        <p>Hybrid AI Engine: Powered by Google Gemini (Primary) & Public AI (Fallback)</p>
       </footer>
     </div>
   );

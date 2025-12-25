@@ -3,6 +3,8 @@ export interface GenerationResult {
   description: string | null;
   timestamp: number;
   prompt: string;
+  imageProvider?: string;
+  textProvider?: string;
 }
 
 export interface LoadingState {

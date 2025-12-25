@@ -1,6 +1,6 @@
 import React from 'react';
 import { GenerationResult, LoadingState } from '../types';
-import { ImageIcon, AlignLeft, Info } from 'lucide-react';
+import { ImageIcon, AlignLeft, Info, Cpu, Sparkles } from 'lucide-react';
 
 interface ResultDisplayProps {
   result: GenerationResult | null;
@@ -28,7 +28,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, loadingState, err
           </div>
         </div>
         <p className="text-xl font-medium">Ready to create</p>
-        <p className="mt-2 text-sm">Enter an item above to see the visualization.</p>
+        <p className="mt-2 text-sm">Enter an item to generate an image and description.</p>
       </div>
     );
   }
@@ -45,14 +45,23 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, loadingState, err
                 <ImageIcon className="w-6 h-6 text-indigo-400" />
               </div>
             </div>
-            <p className="text-indigo-300 animate-pulse font-medium">Rendering preview...</p>
+            <p className="text-indigo-300 animate-pulse font-medium">Creating Artwork...</p>
           </div>
         ) : result?.imageUrl ? (
-          <img
-            src={result.imageUrl}
-            alt={result.prompt}
-            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-          />
+          <>
+            <img
+              src={result.imageUrl}
+              alt={result.prompt}
+              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+            />
+            {/* Provider Badge Overlay */}
+            <div className="absolute bottom-4 left-4">
+               <span className={`px-3 py-1 text-xs rounded-full border backdrop-blur-md flex items-center gap-1.5 shadow-lg ${result.imageProvider?.includes('Gemini') ? 'bg-indigo-900/80 border-indigo-500 text-indigo-200' : 'bg-gray-900/80 border-gray-600 text-gray-300'}`}>
+                  {result.imageProvider?.includes('Gemini') ? <Sparkles className="w-3 h-3" /> : <Cpu className="w-3 h-3" />}
+                  {result.imageProvider}
+               </span>
+            </div>
+          </>
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center text-gray-600">
              <ImageIcon className="w-12 h-12 mb-2" />
@@ -63,7 +72,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, loadingState, err
 
       {/* Description Section */}
       <div className="flex flex-col space-y-6">
-        <div className="bg-gray-800/50 rounded-2xl p-6 md:p-8 border border-gray-700 shadow-xl backdrop-blur-sm min-h-[300px] flex flex-col">
+        <div className="bg-gray-800/50 rounded-2xl p-6 md:p-8 border border-gray-700 shadow-xl backdrop-blur-sm min-h-[300px] flex flex-col relative">
            <div className="flex items-center space-x-3 mb-6 border-b border-gray-700 pb-4">
              <AlignLeft className="w-6 h-6 text-purple-400" />
              <h2 className="text-2xl font-bold text-white capitalize">
@@ -78,7 +87,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, loadingState, err
                   <div className="h-4 bg-gray-700 rounded w-full"></div>
                   <div className="h-4 bg-gray-700 rounded w-5/6"></div>
                   <div className="h-4 bg-gray-700 rounded w-full"></div>
-                  <p className="pt-4 text-purple-300 text-sm">Generating text...</p>
+                  <p className="pt-4 text-purple-300 text-sm">Consulting AI Knowledge...</p>
                 </div>
              ) : result?.description ? (
                <div className="prose prose-invert max-w-none">
@@ -90,19 +99,17 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, loadingState, err
                <p className="text-gray-500 italic">Description will appear here...</p>
              )}
            </div>
+
+           {/* Text Provider Badge */}
+           {result?.description && (
+             <div className="absolute bottom-4 right-4">
+               <span className={`px-3 py-1 text-xs rounded-full border flex items-center gap-1.5 ${result.textProvider?.includes('Gemini') ? 'bg-purple-900/30 border-purple-500/50 text-purple-300' : 'bg-gray-700/30 border-gray-600 text-gray-400'}`}>
+                  {result.textProvider?.includes('Gemini') ? <Sparkles className="w-3 h-3" /> : <Cpu className="w-3 h-3" />}
+                  {result.textProvider}
+               </span>
+             </div>
+           )}
         </div>
-        
-        {/* Status badges */}
-        {result?.prompt && !loadingState.isGeneratingImage && !loadingState.isGeneratingText && (
-            <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-gray-700 text-gray-300 text-sm rounded-full border border-gray-600">
-                    Mock Mode
-                </span>
-                <span className="px-3 py-1 bg-indigo-900/50 text-indigo-300 text-sm rounded-full border border-indigo-800">
-                    AI Disabled
-                </span>
-            </div>
-        )}
       </div>
     </div>
   );
