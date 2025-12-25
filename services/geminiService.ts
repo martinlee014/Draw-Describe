@@ -5,12 +5,11 @@ let aiClient: GoogleGenAI | null = null;
 const getAiClient = (): GoogleGenAI => {
   if (aiClient) return aiClient;
 
-  // Use the standard process.env.API_KEY as mandated
   const apiKey = process.env.API_KEY;
   
-  if (!apiKey) {
-    console.error("Critical: API Key is missing. Checked process.env.API_KEY.");
-    throw new Error("API Key is missing. Please set API_KEY in your .env file or environment variables.");
+  // Check if apiKey is valid (not undefined, null, or empty string)
+  if (!apiKey || apiKey === "undefined") {
+    throw new Error("API Key is missing. Please ensure API_KEY is set in your environment variables or .env file.");
   }
 
   aiClient = new GoogleGenAI({ apiKey });
@@ -52,7 +51,6 @@ export const generateImage = async (item: string): Promise<string> => {
       }
     }
     
-    // If we have text but no image, it's likely a refusal or a text-only response
     if (textMessage) {
       const cleanMessage = textMessage.replace(/\n/g, ' ').trim();
       throw new Error(`AI Response: ${cleanMessage}`);
@@ -60,8 +58,6 @@ export const generateImage = async (item: string): Promise<string> => {
     
     throw new Error("The model did not return an image. It might have been filtered for safety.");
   } catch (error: any) {
-    console.error("Image generation error:", error);
-    
     if (error.message?.includes("403") || error.status === 403) {
       throw new Error("Permission denied. The API Key may not have access to image generation models.");
     }
@@ -84,7 +80,6 @@ export const generateDescription = async (item: string): Promise<string> => {
 
     return response.text || "No description available.";
   } catch (error) {
-    console.error("Text generation error:", error);
     throw error;
   }
 };
