@@ -33,7 +33,8 @@ const App: React.FC = () => {
       })
       .catch((err) => {
         console.error("Image gen failed", err);
-        setError((prev) => prev ? `${prev}. Image generation failed.` : "Image generation failed.");
+        const errorMessage = err instanceof Error ? err.message : "Image generation failed";
+        setError((prev) => prev ? `${prev ? prev + '\n' : ''}Image Error: ${errorMessage}` : `Image Error: ${errorMessage}`);
       })
       .finally(() => {
         setLoadingState((prev) => ({ ...prev, isGeneratingImage: false }));
@@ -46,7 +47,8 @@ const App: React.FC = () => {
       })
       .catch((err) => {
         console.error("Text gen failed", err);
-        setError((prev) => prev ? `${prev}. Description generation failed.` : "Description generation failed.");
+        const errorMessage = err instanceof Error ? err.message : "Description generation failed";
+        setError((prev) => prev ? `${prev ? prev + '\n' : ''}Text Error: ${errorMessage}` : `Text Error: ${errorMessage}`);
       })
       .finally(() => {
         setLoadingState((prev) => ({ ...prev, isGeneratingText: false }));

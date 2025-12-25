@@ -7,7 +7,7 @@ const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 /**
  * Generates an image based on the item name.
- * Uses gemini-2.5-flash-image for efficient image generation.
+ * Uses gemini-2.5-flash-image which is generally available.
  */
 export const generateImage = async (item: string): Promise<string> => {
   if (!ai) throw new Error("API Key not found");
@@ -18,7 +18,7 @@ export const generateImage = async (item: string): Promise<string> => {
       contents: {
         parts: [
           {
-            text: `A high-quality, detailed, artistic illustration of ${item}. The subject should be centered, clear, and visually appealing on a clean background.`,
+            text: `Illustration of ${item}, high quality, isolated on white background.`,
           },
         ],
       },
@@ -29,15 +29,35 @@ export const generateImage = async (item: string): Promise<string> => {
       }
     });
 
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
+    const parts = response.candidates?.[0]?.content?.parts || [];
+    let textMessage = '';
+
+    for (const part of parts) {
       if (part.inlineData) {
         return `data:image/png;base64,${part.inlineData.data}`;
       }
+      if (part.text) {
+        textMessage += part.text;
+      }
     }
     
-    throw new Error("No image data received from the model.");
-  } catch (error) {
+    // If we have text but no image, it's likely a refusal or a text-only response
+    if (textMessage) {
+      // Clean up the message slightly
+      const cleanMessage = textMessage.replace(/\n/g, ' ').trim();
+      throw new Error(`AI Response: ${cleanMessage}`);
+    }
+    
+    // If no parts at all, or no inlineData and no text
+    throw new Error("The model did not return an image. It might have been filtered for safety.");
+  } catch (error: any) {
     console.error("Image generation error:", error);
+    
+    // Provide more user-friendly error messages for common codes
+    if (error.message?.includes("403") || error.status === 403) {
+      throw new Error("Permission denied. The API Key may not have access to image generation models.");
+    }
+    
     throw error;
   }
 };
