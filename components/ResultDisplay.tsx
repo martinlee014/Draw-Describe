@@ -28,7 +28,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, loadingState, err
           </div>
         </div>
         <p className="text-xl font-medium">Ready to create</p>
-        <p className="mt-2 text-sm">Enter an item above to see the AI magic happen.</p>
+        <p className="mt-2 text-sm">Enter an item above to see the visualization.</p>
       </div>
     );
   }
@@ -45,7 +45,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, loadingState, err
                 <ImageIcon className="w-6 h-6 text-indigo-400" />
               </div>
             </div>
-            <p className="text-indigo-300 animate-pulse font-medium">Sketching masterpiece...</p>
+            <p className="text-indigo-300 animate-pulse font-medium">Rendering preview...</p>
           </div>
         ) : result?.imageUrl ? (
           <img
@@ -78,7 +78,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, loadingState, err
                   <div className="h-4 bg-gray-700 rounded w-full"></div>
                   <div className="h-4 bg-gray-700 rounded w-5/6"></div>
                   <div className="h-4 bg-gray-700 rounded w-full"></div>
-                  <p className="pt-4 text-purple-300 text-sm">Writing description...</p>
+                  <p className="pt-4 text-purple-300 text-sm">Generating text...</p>
                 </div>
              ) : result?.description ? (
                <div className="prose prose-invert max-w-none">
@@ -92,17 +92,14 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, loadingState, err
            </div>
         </div>
         
-        {/* Optional decorative elements or tags could go here */}
+        {/* Status badges */}
         {result?.prompt && !loadingState.isGeneratingImage && !loadingState.isGeneratingText && (
             <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-gray-700 text-gray-300 text-sm rounded-full border border-gray-600">
+                    Mock Mode
+                </span>
                 <span className="px-3 py-1 bg-indigo-900/50 text-indigo-300 text-sm rounded-full border border-indigo-800">
-                    AI Generated
-                </span>
-                <span className="px-3 py-1 bg-purple-900/50 text-purple-300 text-sm rounded-full border border-purple-800">
-                    Gemini 2.5 Flash
-                </span>
-                 <span className="px-3 py-1 bg-blue-900/50 text-blue-300 text-sm rounded-full border border-blue-800">
-                    Gemini 3 Flash
+                    AI Disabled
                 </span>
             </div>
         )}

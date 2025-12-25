@@ -74,7 +74,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className="mt-20 text-center text-gray-600 text-sm pb-6">
-        <p>Powered by Gemini 2.5 Flash & Gemini 3 Flash</p>
+        <p>Mock Mode (AI Disabled) - No API Key Required</p>
       </footer>
     </div>
   );

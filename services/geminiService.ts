@@ -1,85 +1,29 @@
-import { GoogleGenAI } from "@google/genai";
-
-let aiClient: GoogleGenAI | null = null;
-
-const getAiClient = (): GoogleGenAI => {
-  if (aiClient) return aiClient;
-
-  const apiKey = process.env.API_KEY;
-  
-  // Check if apiKey is valid (not undefined, null, or empty string)
-  if (!apiKey || apiKey === "undefined") {
-    throw new Error("API Key is missing. Please ensure API_KEY is set in your environment variables or .env file.");
-  }
-
-  aiClient = new GoogleGenAI({ apiKey });
-  return aiClient;
-};
+/**
+ * Mock Service - Replaces AI functionality to avoid API Key requirements.
+ * This service simulates the behavior of the AI without making actual API calls.
+ */
 
 /**
- * Generates an image based on the item name.
- * Uses gemini-2.5-flash-image which is generally available.
+ * Generates a mock image based on the item name.
+ * Returns a stylized placeholder image URL.
  */
 export const generateImage = async (item: string): Promise<string> => {
-  try {
-    const ai = getAiClient();
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
-      contents: {
-        parts: [
-          {
-            text: `Illustration of ${item}, high quality, isolated on white background.`,
-          },
-        ],
-      },
-      config: {
-        imageConfig: {
-          aspectRatio: "1:1",
-        }
-      }
-    });
-
-    const parts = response.candidates?.[0]?.content?.parts || [];
-    let textMessage = '';
-
-    for (const part of parts) {
-      if (part.inlineData) {
-        return `data:image/png;base64,${part.inlineData.data}`;
-      }
-      if (part.text) {
-        textMessage += part.text;
-      }
-    }
-    
-    if (textMessage) {
-      const cleanMessage = textMessage.replace(/\n/g, ' ').trim();
-      throw new Error(`AI Response: ${cleanMessage}`);
-    }
-    
-    throw new Error("The model did not return an image. It might have been filtered for safety.");
-  } catch (error: any) {
-    if (error.message?.includes("403") || error.status === 403) {
-      throw new Error("Permission denied. The API Key may not have access to image generation models.");
-    }
-    
-    throw error;
-  }
+  // Simulate network latency to mimic AI processing
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  // Create a clean, dark-themed placeholder image
+  // Background: gray-800 (#1f2937), Text: indigo-400 (#818cf8)
+  const encodedItem = encodeURIComponent(item);
+  return `https://placehold.co/1024x1024/1f2937/818cf8/png?text=${encodedItem}&font=montserrat`;
 };
 
 /**
- * Generates a description based on the item name.
- * Uses gemini-3-flash-preview for text generation.
+ * Generates a mock description based on the item name.
+ * Returns a static simulated response.
  */
 export const generateDescription = async (item: string): Promise<string> => {
-  try {
-    const ai = getAiClient();
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: `Write a concise, engaging, and educational description of "${item}". Explain what it is, its primary function, and an interesting fact about it. Keep it under 150 words.`,
-    });
+  // Simulate network latency
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-    return response.text || "No description available.";
-  } catch (error) {
-    throw error;
-  }
+  return `[Mock Mode Active]\n\nYou requested: "${item}".\n\nSince AI features are currently disabled to remove the API Key requirement, I cannot generate a real-time description. \n\nHowever, this text serves as a placeholder to demonstrate the layout. In the full AI version, this section would contain a detailed, educational explanation of what "${item}" is, including its primary function, history, and interesting facts.`;
 };
